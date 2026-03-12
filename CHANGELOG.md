@@ -4,11 +4,15 @@ All notable changes to the KubeAdjust Helm chart are documented here.
 
 ---
 
-## [0.19.1] - 2026-03-12
+## [0.19.2] - 2026-03-12
 
 ### Fixed
-- Pin Helm to `v4.1.1` in CI (`azure/setup-helm@v4` now installs Helm 4.x by default since Nov 2025)
-- Chart is compatible with both Helm 3.x and Helm 4.x — no chart changes required
+- Move chart to `charts/kubeadjust/` — fixes `helm dependency update` failing with "Chart.yaml file is missing" caused by `.helmignore` conflict at repo root
+- Update CI to use `charts/kubeadjust` path for all helm commands (`dependency update`, `lint`, `template`)
+
+### Changed
+- Add CI lint badge and Helm 3.x/4.x compatibility badge to README
+- Update README and CLAUDE.md to reflect chart path (`charts/kubeadjust`)
 
 ---
 
