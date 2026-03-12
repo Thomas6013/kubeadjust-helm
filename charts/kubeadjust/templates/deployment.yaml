@@ -77,12 +77,22 @@ spec:
             - name: OIDC_GROUPS
               value: {{ .Values.oidc.groups | quote }}
             {{- end }}
+            {{- if .Values.oidc.existingTokenSecret }}
+            {{- range $name, $_ := .Values.backend.clusters }}
+            - name: SA_TOKEN_{{ $name | upper | replace "-" "_" }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $.Values.oidc.existingTokenSecret }}
+                  key: {{ $name }}
+            {{- end }}
+            {{- else }}
             {{- range $name, $_ := .Values.oidc.saTokens }}
             - name: SA_TOKEN_{{ $name | upper | replace "-" "_" }}
               valueFrom:
                 secretKeyRef:
                   name: {{ include "kubeadjust.oidcTokenSecretName" $ }}
                   key: {{ $name }}
+            {{- end }}
             {{- end }}
           {{- end }}
           livenessProbe:

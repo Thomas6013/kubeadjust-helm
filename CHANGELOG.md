@@ -4,6 +4,14 @@ All notable changes to the KubeAdjust Helm chart are documented here.
 
 ---
 
+## [0.20.0] - 2026-03-12
+
+### Changed
+- **`existingTokenSecret` now auto-mounts SA tokens from `backend.clusters`** — when set, no need to duplicate cluster names in `saTokens`; env vars `SA_TOKEN_<CLUSTER>` are derived automatically from `backend.clusters` keys
+- Fix misleading `saTokens` comment: keys are always required when not using `existingTokenSecret`
+
+---
+
 ## [0.19.2] - 2026-03-12
 
 ### Fixed

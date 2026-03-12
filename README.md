@@ -15,7 +15,7 @@ KubeAdjust shows CPU/memory requests, limits, and actual usage for every workloa
 
 ```bash
 git clone https://github.com/Thomas6013/kubeadjust-helm.git
-helm install kubeadjust ./kubeadjust-helm \
+helm install kubeadjust kubeadjust-helm/charts/kubeadjust \
   --namespace kubeadjust --create-namespace \
   --set ingress.enabled=true \
   --set ingress.host=kubeadjust.your-domain.com
@@ -24,7 +24,7 @@ helm install kubeadjust ./kubeadjust-helm \
 Or directly from the cloned directory:
 
 ```bash
-helm upgrade --install kubeadjust . \
+helm upgrade --install kubeadjust charts/kubeadjust \
   --namespace kubeadjust --create-namespace
 ```
 
@@ -76,7 +76,7 @@ kubectl create token kubeadjust -n kubeadjust
 | `oidc.groups` | `""` | Allowed OIDC groups (comma-separated, empty = all) |
 | `oidc.existingSecret` | `""` | Existing secret with `clientSecret` + `sessionSecret` |
 | `oidc.saTokens` | `{}` | SA tokens per cluster: `{prod: token, staging: token}` |
-| `oidc.existingTokenSecret` | `""` | Existing secret with SA tokens |
+| `oidc.existingTokenSecret` | `""` | Existing secret with SA tokens — keys must match `backend.clusters` names |
 
 ---
 
@@ -131,7 +131,37 @@ oidc:
   existingTokenSecret: "kubeadjust-oidc-tokens"
 ```
 
-See `deploy/` for example Secret manifests.
+### OIDC with existing SA token secret (multi-cluster)
+
+When `existingTokenSecret` is set, `SA_TOKEN_<CLUSTER>` env vars are mounted automatically
+from `backend.clusters` keys — no need to repeat them in `saTokens`:
+
+```yaml
+backend:
+  clusters:
+    prod: "https://k8s.prod.example.com:6443"
+    staging: "https://k8s.staging.example.com:6443"
+
+oidc:
+  enabled: true
+  existingTokenSecret: "kubeadjust-sa-tokens"
+  # saTokens not needed — cluster names are taken from backend.clusters
+```
+
+Your secret must have keys matching the cluster names:
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: kubeadjust-sa-tokens
+  namespace: kubeadjust
+type: Opaque
+stringData:
+  prod: "eyJhbGciOiJSUzI1NiJ9..."
+  staging: "eyJhbGciOiJSUzI1NiJ9..."
+```
+
+See `deploy/` for more example Secret manifests.
 
 ---
 
@@ -139,7 +169,7 @@ See `deploy/` for example Secret manifests.
 
 ```bash
 git pull
-helm upgrade kubeadjust . -n kubeadjust
+helm upgrade kubeadjust charts/kubeadjust -n kubeadjust
 ```
 
 ## Uninstall
