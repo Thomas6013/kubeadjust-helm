@@ -4,6 +4,13 @@ All notable changes to the KubeAdjust Helm chart are documented here.
 
 ---
 
+## [0.23.0] - 2026-03-22
+
+### Changed
+- Update appVersion to 0.22.0
+
+---
+
 ## [0.22.0] - 2026-03-16
 
 ### Changed
