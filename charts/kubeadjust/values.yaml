@@ -32,6 +32,10 @@ backend:
   # - name: KUBE_INSECURE_TLS
   #   value: "true"   # only if your cluster uses a self-signed certificate
   env: []
+  # Pod scheduling for the backend Deployment
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
 
 frontend:
   replicaCount: 1
@@ -48,6 +52,10 @@ frontend:
     limits:
       cpu: 200m
       memory: 256Mi
+  # Pod scheduling for the frontend Deployment
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
 
 # ServiceAccount used by the backend to proxy k8s API calls
 # Note: the actual permissions are granted per-user via their own token.
