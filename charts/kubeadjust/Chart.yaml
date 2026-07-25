@@ -3,7 +3,7 @@ name: kubeadjust
 description: Lightweight Kubernetes resource limits/requests dashboard
 type: application
 version: 0.26.0
-appVersion: "0.25.0"
+appVersion: "0.26.0"
 keywords:
   - kubernetes
   - resources
