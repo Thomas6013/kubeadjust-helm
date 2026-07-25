@@ -113,12 +113,16 @@ spec:
               port: http
             initialDelaySeconds: 5
             periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
           readinessProbe:
             httpGet:
               path: /healthz
               port: http
             initialDelaySeconds: 3
             periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
           resources:
             {{- toYaml .Values.backend.resources | nindent 12 }}
           securityContext:
@@ -177,18 +181,26 @@ spec:
           env:
             - name: BACKEND_URL
               value: {{ printf "http://%s-backend.%s:%v" (include "kubeadjust.fullname" .) .Release.Namespace .Values.backend.port | quote }}
+          # Probes target /healthz, not /. The root path renders the React app
+          # per request (the layout reads headers() for the CSP nonce), which can
+          # exceed the probe deadline under the container CPU limit while the
+          # process is proxying API traffic.
           livenessProbe:
             httpGet:
-              path: /
+              path: /healthz
               port: http
             initialDelaySeconds: 10
             periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 3
           readinessProbe:
             httpGet:
-              path: /
+              path: /healthz
               port: http
             initialDelaySeconds: 5
             periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
           resources:
             {{- toYaml .Values.frontend.resources | nindent 12 }}
           securityContext:
